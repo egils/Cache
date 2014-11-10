@@ -16,7 +16,15 @@
         "psr/cache": "1.0.0"
     },
     "autoload": {
-        "psr-4": { "Psr\\": "src/Psr/" }
+        "psr-4": {
+            "Psr\\Cache\\": "src/Psr/Cache",
+            "Egils\\Cache\\": "src/Egils/Cache"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Egils\\Tests\\Cache": "tests/Egils/Tests/Cache"
+        }
     },
     "extra": {
         "branch-alias": {
