@@ -20,13 +20,14 @@ class CacheItem implements CacheItemInterface
 
     /**
      * @param string $key
-     * @param integer $ttl
+     * @param DateTime|integer|null $ttl
      * @param boolean $hit
+     * @throws InvalidArgumentException
      */
-    public function __construct($key, $ttl = 300, $hit = false)
+    public function __construct($key, $ttl = null, $hit = false)
     {
         $this->key = $key;
-        $this->expiration = $ttl;
+        $this->setExpiration($ttl);
         $this->setHit($hit);
     }
 
