@@ -23,7 +23,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Egils\\Tests\\Cache": "tests/Egils/Tests/Cache"
+            "Egils\\Tests\\Cache\\": "tests/Egils/Tests/Cache"
         }
     },
     "extra": {
