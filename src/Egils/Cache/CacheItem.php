@@ -2,6 +2,7 @@
 namespace Egils\Cache;
 
 use Psr\Cache\CacheItemInterface;
+use DateTime;
 
 class CacheItem implements CacheItemInterface
 {
@@ -11,7 +12,7 @@ class CacheItem implements CacheItemInterface
     /** @var string */
     private $key;
 
-    /** @var integer */
+    /** @var DateTime */
     private $expiration;
 
     /** @var boolean */
@@ -76,7 +77,13 @@ class CacheItem implements CacheItemInterface
      */
     public function setExpiration($ttl = null)
     {
-        $this->expiration = $ttl;
+        if (is_numeric($ttl)) {
+            $this->expiration = new DateTime('now +' . $ttl . ' seconds');
+        } elseif ($ttl instanceof DateTime) {
+            $this->expiration = $ttl;
+        } else {
+            $this->expiration = new DateTime('now +10 years');
+        }
 
         return $this;
     }
