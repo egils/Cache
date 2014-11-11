@@ -15,6 +15,10 @@ class CacheException extends Exception implements CacheExceptionInterface
         return new static("Adapter '" . $name . "' already exists");
     }
 
+    /**
+     * @param string $name
+     * @return CacheException
+     */
     public static function adapterNameNotString($name)
     {
         return new static ("Adapter name expected to be string, " . gettype($name) . " given");
