@@ -6,4 +6,17 @@ use Psr\Cache\CacheException as CacheExceptionInterface;
 
 class CacheException extends Exception implements CacheExceptionInterface
 {
+    /**
+     * @param string $name
+     * @return CacheException
+     */
+    public static function adapterAlreadyExists($name)
+    {
+        return new static("Adapter '" . $name . "' already exists");
+    }
+
+    public static function adapterNameNotString($name)
+    {
+        return new static ("Adapter name expected to be string, " . gettype($name) . " given");
+    }
 }

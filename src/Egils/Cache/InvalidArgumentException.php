@@ -9,7 +9,7 @@ class InvalidArgumentException extends Exception implements InvalidArgumentExcep
     /**
      * @param mixed $value
      * @param string $expectedType
-     * @return static
+     * @return InvalidArgumentException
      */
     public static function typeMismatch($value, $expectedType = "Boolean")
     {
