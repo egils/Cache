@@ -19,9 +19,11 @@ class CacheItemTest extends TestCase
     {
         $this->cacheItem->setHit(true);
         $this->assertTrue($this->cacheItem->isHit());
+        $this->assertTrue($this->cacheItem->exists());
 
         $this->cacheItem->setHit(false);
         $this->assertFalse($this->cacheItem->isHit());
+        $this->assertFalse($this->cacheItem->exists());
     }
 
     public function testCacheItemSetInteger_InvalidArgumentExceptionRaised()
@@ -63,5 +65,17 @@ class CacheItemTest extends TestCase
         $expiration = $this->cacheItem->getExpiration();
 
         $this->assertEquals($now, $expiration);
+    }
+
+    public function testKeyValueRemainsUnchanged()
+    {
+        $value = [
+            'value' => ['another', 'array']
+        ];
+
+        $this->cacheItem->set($value);
+
+        $this->assertSame($value, $this->cacheItem->get());
+        $this->assertEquals('key', $this->cacheItem->getKey());
     }
 }
