@@ -19,7 +19,7 @@
 
     <filter>
         <whitelist>
-            <directory>./src/</directory>
+            <directory>./src/Egils</directory>
         </whitelist>
     </filter>
 </phpunit>
