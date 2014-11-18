@@ -34,7 +34,7 @@ class CacheManager
             throw CacheException::adapterNameNotString($name);
         }
 
-        if (array_key_exists($name, $this->adapters)) {
+        if (true === array_key_exists($name, $this->adapters)) {
             throw CacheException::adapterAlreadyExists($name);
         }
 
@@ -81,7 +81,7 @@ class CacheManager
      */
     public function removeAdapter($name)
     {
-        if ($this->hasAdapter($name)) {
+        if (true === $this->hasAdapter($name)) {
             unset($this->adapters[$name]);
         }
     }

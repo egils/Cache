@@ -78,7 +78,7 @@ class CacheItem implements CacheItemInterface
      */
     public function setExpiration($ttl = null)
     {
-        if (is_numeric($ttl)) {
+        if (true === is_numeric($ttl)) {
             $this->expiration = new DateTime('now +' . $ttl . ' seconds');
         } elseif ($ttl instanceof DateTime) {
             $this->expiration = $ttl;

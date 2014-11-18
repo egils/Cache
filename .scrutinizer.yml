@@ -47,7 +47,7 @@ checks:
         no_eval: true
         no_error_suppression: true
         no_empty_statements: true
-        no_elseif_statements: true
+        no_else_if_statements: true
         no_debug_code: true
         no_commented_out_code: true
         newline_at_end_of_file: true

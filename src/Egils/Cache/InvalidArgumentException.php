@@ -15,5 +15,4 @@ class InvalidArgumentException extends Exception implements InvalidArgumentExcep
     {
         return new static(ucfirst($expectedType) . " value expected but " . gettype($value) . " given");
     }
-
 }
