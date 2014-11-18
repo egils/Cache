@@ -8,10 +8,17 @@ class CacheManager
     /** @var CacheItemPoolInterface[] */
     private $adapters = [];
 
-    public function __construct(array $adapters = [])
+    /** @var string */
+    private $primaryAdapter = null;
+
+    public function __construct(array $adapters = [], $primaryAdapterName = null)
     {
         foreach ($adapters as $name => $adapter) {
             $this->addAdapter($name, $adapter);
+        }
+
+        if (null !== $primaryAdapterName) {
+            $this->setPrimaryAdapterName($primaryAdapterName);
         }
     }
 
@@ -51,7 +58,7 @@ class CacheManager
      * Is adapter with given name already set?
      *
      * @param string $name
-     * @return bool
+     * @return boolean
      */
     public function hasAdapter($name)
     {
@@ -62,7 +69,7 @@ class CacheManager
      * Is adapter already defined?
      *
      * @param CacheItemPoolInterface $adapter
-     * @return bool
+     * @return boolean
      */
     public function hasAdapterInstance(CacheItemPoolInterface $adapter)
     {
@@ -77,5 +84,31 @@ class CacheManager
         if ($this->hasAdapter($name)) {
             unset($this->adapters[$name]);
         }
+    }
+
+    /**
+     * @param string $name
+     * @throws CacheException
+     */
+    public function setPrimaryAdapterName($name)
+    {
+        if (false === $this->hasAdapter($name)) {
+            throw CacheException::adapterDoesNotExist($name);
+        }
+
+        $this->primaryAdapter = $name;
+    }
+
+    /**
+     * @throws CacheException
+     * @return CacheItemPoolInterface
+     */
+    public function getPrimaryAdapter()
+    {
+        if (null === $this->primaryAdapter) {
+            throw CacheException::primaryAdapterNotSet();
+        }
+
+        return $this->getAdapter($this->primaryAdapter);
     }
 }
