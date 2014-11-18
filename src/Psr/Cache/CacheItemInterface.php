@@ -76,7 +76,7 @@ interface CacheItemInterface
     /**
      * Sets the expiration for this cache item.
      *
-     * @param integer|\DateTime $ttl
+     * @param integer|\DateTime|null $ttl
      *   - If an integer is passed, it is interpreted as the number of seconds
      *     after which the item MUST be considered expired.
      *   - If a DateTime object is passed, it is interpreted as the point in
