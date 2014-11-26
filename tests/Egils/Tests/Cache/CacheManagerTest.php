@@ -1,4 +1,13 @@
 <?php
+/*
+ * This file is part of the Egils\Cache package.
+ *
+ * (c) Egidijus Lukauskas <egils.ps@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Egils\Tests\Cache;
 
 use Egils\Cache\CacheManager;
@@ -67,6 +76,8 @@ class CacheManagerTest extends TestCase
 
     public function testRequestNonExistingAdapter_GetNullValue()
     {
+        $this->setExpectedException('Psr\Cache\CacheException', 'Adapter \'notExist\' does not exist');
+
         $this->assertNull($this->manager->getAdapter('notExist'));
     }
 
@@ -83,6 +94,7 @@ class CacheManagerTest extends TestCase
 
         $this->assertFalse($this->manager->hasAdapter('name'));
         $this->assertFalse($this->manager->hasAdapterInstance($this->adapter));
+        $this->setExpectedException('Psr\Cache\CacheException', 'Adapter \'name\' does not exist');
         $this->assertNull($this->manager->getAdapter('name'));
     }
 
@@ -108,5 +120,23 @@ class CacheManagerTest extends TestCase
 
         $this->assertInstanceOf('Psr\Cache\CacheItemPoolInterface', $adapter);
         $this->assertSame($this->adapter, $adapter);
+    }
+
+    public function testAddNewDefaultAdapter()
+    {
+        $this->manager->setDefaultAdapterName('name');
+
+        $adapter = $this->manager->getDefaultAdapter();
+
+        $this->assertInstanceOf('Psr\Cache\CacheItemPoolInterface', $adapter);
+        $this->assertSame($this->adapter, $adapter);
+
+        $newAdapter = $this->getMock('Psr\Cache\CacheItemPoolInterface');
+        $this->manager->addAdapter('newAdapter', $newAdapter, true);
+
+        $adapter = $this->manager->getDefaultAdapter();
+
+        $this->assertInstanceOf('Psr\Cache\CacheItemPoolInterface', $adapter);
+        $this->assertSame($newAdapter, $adapter);
     }
 }

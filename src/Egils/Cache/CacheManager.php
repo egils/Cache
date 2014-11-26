@@ -1,4 +1,13 @@
 <?php
+/*
+ * This file is part of the Egils\Cache package.
+ *
+ * (c) Egidijus Lukauskas <egils.ps@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Egils\Cache;
 
 use Psr\Cache\CacheItemPoolInterface;
@@ -25,10 +34,11 @@ class CacheManager
     /**
      * @param string $name
      * @param CacheItemPoolInterface $adapter
+     * @param bool $default Should this adapter be marked as default?
      *
      * @throws CacheException
      */
-    public function addAdapter($name, CacheItemPoolInterface $adapter)
+    public function addAdapter($name, CacheItemPoolInterface $adapter, $default = false)
     {
         if (false === is_string($name)) {
             throw CacheException::adapterNameNotString($name);
@@ -39,16 +49,21 @@ class CacheManager
         }
 
         $this->adapters[$name] = $adapter;
+
+        if (true === $default) {
+            $this->setDefaultAdapterName($name);
+        }
     }
 
     /**
      * @param string $name
-     * @return null|CacheItemPoolInterface
+     * @return CacheItemPoolInterface
+     * @throws CacheException
      */
     public function getAdapter($name)
     {
-        if (false === isset($this->adapters[$name])) {
-            return null;
+        if (false === $this->hasAdapter($name)) {
+            throw CacheException::adapterDoesNotExist($name);
         }
 
         return $this->adapters[$name];
