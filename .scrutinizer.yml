@@ -74,4 +74,4 @@ tools:
 
 filter:
     excluded_paths:
-        - tests/*
+        - Tests/*

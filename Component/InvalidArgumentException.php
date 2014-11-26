@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of the Egils\Cache package.
+ * This file is part of the Egils\Component\Cache package.
  *
  * (c) Egidijus Lukauskas <egils.ps@gmail.com>
  *
@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Egils\Cache;
+namespace Egils\Component\Cache;
 
 use Exception;
 use Psr\Cache\InvalidArgumentException as InvalidArgumentExceptionInterface;

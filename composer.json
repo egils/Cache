@@ -17,13 +17,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Psr\\Cache\\": "src/Psr/Cache",
-            "Egils\\Cache\\": "src/Egils/Cache"
+            "Psr\\Cache\\": "Psr/Cache",
+            "Egils\\Component\\Cache\\": "Component"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Egils\\Tests\\Cache\\": "tests/Egils/Tests/Cache"
+            "Egils\\Tests\\Cache\\": "Tests"
         }
     },
     "extra": {

@@ -18,6 +18,11 @@ BUG TRACKING
 
 This component uses [GitHub issues](https://github.com/egils/Cache/issues). If you have found a bug or have a feature request, please create an issue.
 
+RELEASED CHANGES
+----------------
+
+All releases are described and documented in [releases](https://github.com/egils/Cache/releases) section.
+
 LICENSE
 -------
 

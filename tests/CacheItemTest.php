@@ -10,7 +10,7 @@
 
 namespace Egils\Tests\Cache;
 
-use Egils\Cache\CacheItem;
+use Egils\Component\Cache\CacheItem;
 use PHPUnit_Framework_TestCase as TestCase;
 
 class CacheItemTest extends TestCase

@@ -10,7 +10,7 @@
 
 namespace Egils\Tests\Cache\Adapter;
 
-use Egils\Cache\Adapter\DefaultCacheAdapter;
+use Egils\Component\Cache\Adapter\DefaultCacheAdapter;
 use PHPUnit_Framework_TestCase as TestCase;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use Psr\Cache\CacheItemInterface;

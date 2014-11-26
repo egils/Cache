@@ -10,7 +10,7 @@
 
 namespace Egils\Tests\Cache;
 
-use Egils\Cache\CacheManager;
+use Egils\Component\Cache\CacheManager;
 use PHPUnit_Framework_TestCase as TestCase;
 use Psr\Cache\CacheItemPoolInterface;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
