@@ -7,13 +7,17 @@
         "php": ">=5.4"
     },
     "require-dev": {
-        "phpunit/phpunit": "*"
+        "phpunit/phpunit": "*",
+        "doctrine/cache": "~1.3"
     },
     "provide": {
         "psr/cache-implementation": "1.0.0"
     },
     "replace": {
         "psr/cache": "1.0.0"
+    },
+    "suggest": {
+        "doctrine/cache": "Various cache drivers that can be used with DoctrineCacheAdapter"
     },
     "autoload": {
         "psr-4": {
