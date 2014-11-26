@@ -28,7 +28,7 @@ class CacheItemTest extends TestCase
 
     public function testCacheItemSetInteger_InvalidArgumentExceptionRaised()
     {
-        $this->setExpectedException('Psr\Cache\InvalidArgumentException', "Boolean value expected but integer given");
+        $this->setExpectedException('Psr\Cache\InvalidArgumentException', 'Boolean value expected but integer given');
 
         $this->cacheItem->setHit(1);
     }

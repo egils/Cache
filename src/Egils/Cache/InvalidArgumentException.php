@@ -11,8 +11,8 @@ class InvalidArgumentException extends Exception implements InvalidArgumentExcep
      * @param string $expectedType
      * @return InvalidArgumentException
      */
-    public static function typeMismatch($value, $expectedType = "Boolean")
+    public static function typeMismatch($value, $expectedType = 'Boolean')
     {
-        return new static(ucfirst($expectedType) . " value expected but " . gettype($value) . " given");
+        return new static(ucfirst($expectedType) . ' value expected but ' . gettype($value) . ' given');
     }
 }

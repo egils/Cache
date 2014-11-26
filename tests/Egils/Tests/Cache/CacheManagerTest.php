@@ -37,7 +37,7 @@ class CacheManagerTest extends TestCase
         $this->assertNull($this->manager);
     }
 
-    public function testInitialisationWithInvalidPrimaryAdapterName_CacheExceptionRaised()
+    public function testInitialisationWithInvalidDefaultAdapterName_CacheExceptionRaised()
     {
         $this->setExpectedException('Psr\Cache\CacheException', 'Adapter \'non-existing-adapter-name\' does not exist');
 
@@ -46,13 +46,13 @@ class CacheManagerTest extends TestCase
         $this->assertNull($this->manager);
     }
 
-    public function testInitialisationWithPrimaryAdapterName()
+    public function testInitialisationWithDefaultAdapterName()
     {
         $this->manager = new CacheManager(['name' => $this->adapter], 'name');
 
         $this->assertNotNull($this->manager);
 
-        $adapter = $this->manager->getPrimaryAdapter();
+        $adapter = $this->manager->getDefaultAdapter();
 
         $this->assertInstanceOf('Psr\Cache\CacheItemPoolInterface', $adapter);
         $this->assertSame($this->adapter, $adapter);
@@ -86,25 +86,25 @@ class CacheManagerTest extends TestCase
         $this->assertNull($this->manager->getAdapter('name'));
     }
 
-    public function testSetNonExistingPrimaryAdapterName_CacheExceptionRaised()
+    public function testSetNonExistingDefaultAdapterName_CacheExceptionRaised()
     {
         $this->setExpectedException('Psr\Cache\CacheException', 'Adapter \'non-existing-adapter-name\' does not exist');
 
-        $this->manager->setPrimaryAdapterName('non-existing-adapter-name');
+        $this->manager->setDefaultAdapterName('non-existing-adapter-name');
     }
 
-    public function testGetNotSetPrimaryAdapter_CacheExceptionRaised()
+    public function testGetNotSetDefaultAdapter_CacheExceptionRaised()
     {
-        $this->setExpectedException('Psr\Cache\CacheException', 'Primary adapter is not set');
+        $this->setExpectedException('Psr\Cache\CacheException', 'Default adapter is not set');
 
-        $this->manager->getPrimaryAdapter();
+        $this->manager->getDefaultAdapter();
     }
 
-    public function testGetPrimaryAdapter()
+    public function testGetDefaultAdapter()
     {
-        $this->manager->setPrimaryAdapterName('name');
+        $this->manager->setDefaultAdapterName('name');
 
-        $adapter = $this->manager->getPrimaryAdapter();
+        $adapter = $this->manager->getDefaultAdapter();
 
         $this->assertInstanceOf('Psr\Cache\CacheItemPoolInterface', $adapter);
         $this->assertSame($this->adapter, $adapter);

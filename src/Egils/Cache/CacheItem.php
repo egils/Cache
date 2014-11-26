@@ -106,7 +106,7 @@ class CacheItem implements CacheItemInterface
     public function setHit($hit)
     {
         if (false === is_bool($hit)) {
-            throw InvalidArgumentException::typeMismatch($hit, "Boolean");
+            throw InvalidArgumentException::typeMismatch($hit, 'Boolean');
         }
 
         $this->hit = $hit;

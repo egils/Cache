@@ -9,16 +9,16 @@ class CacheManager
     private $adapters = [];
 
     /** @var string */
-    private $primaryAdapter = null;
+    private $defaultAdapter = null;
 
-    public function __construct(array $adapters = [], $primaryAdapterName = null)
+    public function __construct(array $adapters = [], $defaultAdapterName = null)
     {
         foreach ($adapters as $name => $adapter) {
             $this->addAdapter($name, $adapter);
         }
 
-        if (null !== $primaryAdapterName) {
-            $this->setPrimaryAdapterName($primaryAdapterName);
+        if (null !== $defaultAdapterName) {
+            $this->setDefaultAdapterName($defaultAdapterName);
         }
     }
 
@@ -90,25 +90,25 @@ class CacheManager
      * @param string $name
      * @throws CacheException
      */
-    public function setPrimaryAdapterName($name)
+    public function setDefaultAdapterName($name)
     {
         if (false === $this->hasAdapter($name)) {
             throw CacheException::adapterDoesNotExist($name);
         }
 
-        $this->primaryAdapter = $name;
+        $this->defaultAdapter = $name;
     }
 
     /**
      * @throws CacheException
      * @return CacheItemPoolInterface
      */
-    public function getPrimaryAdapter()
+    public function getDefaultAdapter()
     {
-        if (null === $this->primaryAdapter) {
-            throw CacheException::primaryAdapterNotSet();
+        if (null === $this->defaultAdapter) {
+            throw CacheException::defaultAdapterNotSet();
         }
 
-        return $this->getAdapter($this->primaryAdapter);
+        return $this->getAdapter($this->defaultAdapter);
     }
 }

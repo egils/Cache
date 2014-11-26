@@ -12,7 +12,7 @@ class CacheException extends Exception implements CacheExceptionInterface
      */
     public static function adapterAlreadyExists($name)
     {
-        return new static("Adapter '" . $name . "' already exists");
+        return new static('Adapter \'' . $name . '\' already exists');
     }
 
     /**
@@ -21,7 +21,7 @@ class CacheException extends Exception implements CacheExceptionInterface
      */
     public static function adapterNameNotString($name)
     {
-        return new static("Adapter name expected to be string, " . gettype($name) . " given");
+        return new static('Adapter name expected to be string, ' . gettype($name) . ' given');
     }
 
     /**
@@ -30,12 +30,12 @@ class CacheException extends Exception implements CacheExceptionInterface
      */
     public static function adapterDoesNotExist($name)
     {
-        return new static("Adapter '" . $name . "' does not exist");
+        return new static('Adapter \'' . $name . '\' does not exist');
     }
 
     /** @return CacheException */
-    public static function primaryAdapterNotSet()
+    public static function defaultAdapterNotSet()
     {
-        return new static("Primary adapter is not set");
+        return new static('Default adapter is not set');
     }
 }
