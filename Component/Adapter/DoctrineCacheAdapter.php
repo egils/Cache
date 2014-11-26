@@ -41,13 +41,13 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
      */
     public function getItems(array $keys = [])
     {
-        if (empty($keys)) {
+        if (true === empty($keys)) {
             return [];
         }
 
         $items = [];
         foreach ($keys as $key) {
-            if ($this->provider->contains($key) && $item = $this->provider->fetch($key)) {
+            if (true === $this->provider->contains($key) && $item = $this->provider->fetch($key)) {
                 $items[$key] = $item;
             } else {
                 $items[$key] = null;
@@ -71,7 +71,7 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
     public function deleteItems(array $keys)
     {
         foreach ($keys as $key) {
-            if ($this->provider->contains($key)) {
+            if (true === $this->provider->contains($key)) {
                 $this->provider->delete($key);
             }
         }

@@ -57,6 +57,13 @@ class DoctrineCacheAdapterTest extends TestCase
         $this->assertSame($this->cacheItem, $cacheItem);
     }
 
+    public function testGetItems_EmptyKeysSetGiven()
+    {
+        $cacheItems = $this->adapter->getItems([]);
+
+        $this->assertEmpty($cacheItems);
+    }
+
     public function testGetItems_AllItemsFound()
     {
         $keys = ['cache-key-1', 'cache-key-2'];
