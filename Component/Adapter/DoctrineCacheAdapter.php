@@ -49,7 +49,7 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
         foreach ($keys as $key) {
             if (true === $this->provider->contains($key)) {
                 $item = $this->provider->fetch($key);
-                $items[$key] = $item ? $item : null;
+                $items[$key] = false !== $item ? $item : null;
             } else {
                 $items[$key] = null;
             }
