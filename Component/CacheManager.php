@@ -12,7 +12,7 @@ namespace Egils\Component\Cache;
 
 use Psr\Cache\CacheItemPoolInterface;
 
-class CacheManager
+class CacheManager implements CacheManagerInterface
 {
     /** @var CacheItemPoolInterface[] */
     private $adapters = [];
@@ -56,9 +56,7 @@ class CacheManager
     }
 
     /**
-     * @param string $name
-     * @return CacheItemPoolInterface
-     * @throws CacheException
+     * {@inheritdoc}
      */
     public function getAdapter($name)
     {
@@ -70,10 +68,7 @@ class CacheManager
     }
 
     /**
-     * Is adapter with given name already set?
-     *
-     * @param string $name
-     * @return boolean
+     * {@inheritdoc}
      */
     public function hasAdapter($name)
     {
@@ -81,10 +76,7 @@ class CacheManager
     }
 
     /**
-     * Is adapter already defined?
-     *
-     * @param CacheItemPoolInterface $adapter
-     * @return boolean
+     * {@inheritdoc}
      */
     public function hasAdapterInstance(CacheItemPoolInterface $adapter)
     {
@@ -115,8 +107,7 @@ class CacheManager
     }
 
     /**
-     * @throws CacheException
-     * @return CacheItemPoolInterface
+     * {@inheritdoc}
      */
     public function getDefaultAdapter()
     {
