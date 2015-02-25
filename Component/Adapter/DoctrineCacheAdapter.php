@@ -11,6 +11,7 @@
 namespace Egils\Component\Cache\Adapter;
 
 use Doctrine\Common\Cache\CacheProvider;
+use Egils\Component\Cache\CacheItem;
 use Psr\Cache\CacheItemInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use DateTime;
@@ -33,7 +34,14 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
      */
     public function getItem($key)
     {
-        return $this->provider->fetch($key);
+        if (true === $this->provider->contains($key)) {
+            $item = $this->provider->fetch($key);
+            $item->setHit(true);
+
+            return $item;
+        } else {
+            return new CacheItem($key);
+        }
     }
 
     /**
@@ -48,8 +56,7 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
         $items = [];
         foreach ($keys as $key) {
             if (true === $this->provider->contains($key)) {
-                $item = $this->provider->fetch($key);
-                $items[$key] = false !== $item ? $item : null;
+                $items[$key] = $this->fetchCacheItem($key);
             } else {
                 $items[$key] = null;
             }
@@ -125,5 +132,22 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
         }
 
         return $this->provider->save($item->getKey(), $item, $ttl);
+    }
+
+    /**
+     * @param string $key
+     * @return CacheItemInterface|null
+     */
+    public function fetchCacheItem($key)
+    {
+        $item = $this->provider->fetch($key);
+
+        if (false !== $item) {
+            $item->setHit(true);
+
+            return $item;
+        }
+
+        return null;
     }
 }
