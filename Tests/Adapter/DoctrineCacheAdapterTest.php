@@ -74,17 +74,18 @@ class DoctrineCacheAdapterTest extends TestCase
 
     public function testGetItem_ItemNotFound()
     {
-        $key = 'cache-key';
+        date_default_timezone_set('Europe/Vilnius');
+
         $this->cacheProvider
             ->expects($this->once())
             ->method('contains')
-            ->with($key)
+            ->with($this->cacheKey)
             ->willReturn(false);
 
-        $cacheItem = $this->adapter->getItem($key);
+        $cacheItem = $this->adapter->getItem($this->cacheKey);
 
         $this->assertInstanceOf('Psr\Cache\CacheItemInterface', $cacheItem);
-        $this->assertEquals($key, $cacheItem->getKey());
+        $this->assertEquals($this->cacheKey, $cacheItem->getKey());
         $this->assertFalse($cacheItem->isHit());
     }
 
@@ -126,6 +127,12 @@ class DoctrineCacheAdapterTest extends TestCase
             ->willReturnMap([[$keys[0], false], [$keys[1], true]]);
 
         $otherCacheItem = $this->getMock('Egils\Component\Cache\CacheItem', [], [$keys[1]]);
+        $otherCacheItem
+            ->expects($this->once())
+            ->method('setHit')
+            ->with(true)
+            ->willReturn($otherCacheItem);
+
         $this->cacheProvider
             ->expects($this->once())
             ->method('fetch')
@@ -136,30 +143,11 @@ class DoctrineCacheAdapterTest extends TestCase
 
         $this->assertCount(2, $cacheItems);
         $this->assertEquals($keys, array_keys($cacheItems));
-        $this->assertNull($cacheItems[$keys[0]]);
-        $this->assertSame($otherCacheItem, $cacheItems[$keys[1]]);
-    }
 
-    public function testGetItems_FirstFetchFailed()
-    {
-        $keys = [$this->cacheKey, 'cache-key-2'];
-        $this->cacheProvider
-            ->expects($this->exactly(count($keys)))
-            ->method('contains')
-            ->withConsecutive([$keys[0]], [$keys[1]])
-            ->willReturn(true);
+        $firstCacheItem = $cacheItems[$keys[0]];
+        $this->assertInstanceOf('Egils\Component\Cache\CacheItem', $firstCacheItem);
+        $this->assertfalse($firstCacheItem->isHit());
 
-        $otherCacheItem = $this->getMock('Egils\Component\Cache\CacheItem', [], [$keys[1]]);
-        $this->cacheProvider
-            ->expects($this->exactly(count($keys)))
-            ->method('fetch')
-            ->willReturnMap([[$keys[0], false], [$keys[1], $otherCacheItem]]);
-
-        $cacheItems = $this->adapter->getItems($keys);
-
-        $this->assertCount(2, $cacheItems);
-        $this->assertEquals($keys, array_keys($cacheItems));
-        $this->assertNull($cacheItems[$keys[0]]);
         $this->assertSame($otherCacheItem, $cacheItems[$keys[1]]);
     }
 

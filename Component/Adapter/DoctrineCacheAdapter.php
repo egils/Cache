@@ -34,14 +34,14 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
      */
     public function getItem($key)
     {
-        if (true === $this->provider->contains($key)) {
-            $item = $this->provider->fetch($key);
-            $item->setHit(true);
-
-            return $item;
-        } else {
+        if (false === $this->provider->contains($key)) {
             return new CacheItem($key);
         }
+
+        $item = $this->provider->fetch($key);
+        $item->setHit(true);
+
+        return $item;
     }
 
     /**
@@ -55,11 +55,7 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
 
         $items = [];
         foreach ($keys as $key) {
-            if (true === $this->provider->contains($key)) {
-                $items[$key] = $this->fetchCacheItem($key);
-            } else {
-                $items[$key] = null;
-            }
+            $items[$key] = $this->getItem($key);
         }
 
         return $items;
@@ -132,22 +128,5 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
         }
 
         return $this->provider->save($item->getKey(), $item, $ttl);
-    }
-
-    /**
-     * @param string $key
-     * @return CacheItemInterface|null
-     */
-    public function fetchCacheItem($key)
-    {
-        $item = $this->provider->fetch($key);
-
-        if (false !== $item) {
-            $item->setHit(true);
-
-            return $item;
-        }
-
-        return null;
     }
 }
