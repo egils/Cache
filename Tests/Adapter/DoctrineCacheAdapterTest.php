@@ -14,7 +14,7 @@ use Doctrine\Common\Cache\CacheProvider;
 use Egils\Component\Cache\Adapter\DoctrineCacheAdapter;
 use PHPUnit_Framework_TestCase as TestCase;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
-use Psr\Cache\CacheItemInterface;
+use Egils\Component\Cache\CacheItem;
 
 class DoctrineCacheAdapterTest extends TestCase
 {
@@ -24,8 +24,11 @@ class DoctrineCacheAdapterTest extends TestCase
     /** @var CacheProvider|MockObject */
     private $cacheProvider;
 
-    /** @var CacheItemInterface|MockObject */
+    /** @var CacheItem|MockObject */
     private $cacheItem;
+
+    /** @var string */
+    private $cacheKey;
 
     public function setUp()
     {
@@ -40,21 +43,50 @@ class DoctrineCacheAdapterTest extends TestCase
         );
         $this->adapter = new DoctrineCacheAdapter($this->cacheProvider);
 
-        $this->cacheItem = $this->getMock('Psr\Cache\CacheItemInterface');
+        $this->cacheKey = 'cache-key';
+        $this->cacheItem = $this->getMock('Egils\Component\Cache\CacheItem', [], [$this->cacheKey]);
     }
 
     public function testGetItem()
     {
-        $key = 'cache-key';
         $this->cacheProvider
             ->expects($this->once())
             ->method('fetch')
-            ->with($key)
+            ->with($this->cacheKey)
             ->willReturn($this->cacheItem);
 
-        $cacheItem = $this->adapter->getItem($key);
+        $this->cacheProvider
+            ->expects($this->once())
+            ->method('contains')
+            ->with($this->cacheKey)
+            ->willReturn(true);
+
+        $this->cacheItem
+            ->expects($this->once())
+            ->method('setHit')
+            ->with(true)
+            ->willReturn($this->cacheItem);
+
+        $cacheItem = $this->adapter->getItem($this->cacheKey);
 
         $this->assertSame($this->cacheItem, $cacheItem);
+    }
+
+    public function testGetItem_ItemNotFound()
+    {
+        date_default_timezone_set('Europe/Vilnius');
+
+        $this->cacheProvider
+            ->expects($this->once())
+            ->method('contains')
+            ->with($this->cacheKey)
+            ->willReturn(false);
+
+        $cacheItem = $this->adapter->getItem($this->cacheKey);
+
+        $this->assertInstanceOf('Psr\Cache\CacheItemInterface', $cacheItem);
+        $this->assertEquals($this->cacheKey, $cacheItem->getKey());
+        $this->assertFalse($cacheItem->isHit());
     }
 
     public function testGetItems_EmptyKeysSetGiven()
@@ -66,14 +98,14 @@ class DoctrineCacheAdapterTest extends TestCase
 
     public function testGetItems_AllItemsFound()
     {
-        $keys = ['cache-key-1', 'cache-key-2'];
+        $keys = [$this->cacheKey, 'cache-key-2'];
         $this->cacheProvider
             ->expects($this->exactly(count($keys)))
             ->method('contains')
             ->withConsecutive([$keys[0]], [$keys[1]])
             ->willReturn(true);
 
-        $otherCacheItem = $this->getMock('Psr\Cache\CacheItemInterface');
+        $otherCacheItem = $this->getMock('Egils\Component\Cache\CacheItem', [], [$keys[1]]);
         $this->cacheProvider
             ->expects($this->exactly(count($keys)))
             ->method('fetch')
@@ -88,13 +120,19 @@ class DoctrineCacheAdapterTest extends TestCase
 
     public function testGetItems_OnlySecondItemFound()
     {
-        $keys = ['cache-key-1', 'cache-key-2'];
+        $keys = [$this->cacheKey, 'cache-key-2'];
         $this->cacheProvider
             ->expects($this->exactly(count($keys)))
             ->method('contains')
             ->willReturnMap([[$keys[0], false], [$keys[1], true]]);
 
-        $otherCacheItem = $this->getMock('Psr\Cache\CacheItemInterface');
+        $otherCacheItem = $this->getMock('Egils\Component\Cache\CacheItem', [], [$keys[1]]);
+        $otherCacheItem
+            ->expects($this->once())
+            ->method('setHit')
+            ->with(true)
+            ->willReturn($otherCacheItem);
+
         $this->cacheProvider
             ->expects($this->once())
             ->method('fetch')
@@ -105,30 +143,11 @@ class DoctrineCacheAdapterTest extends TestCase
 
         $this->assertCount(2, $cacheItems);
         $this->assertEquals($keys, array_keys($cacheItems));
-        $this->assertNull($cacheItems[$keys[0]]);
-        $this->assertSame($otherCacheItem, $cacheItems[$keys[1]]);
-    }
 
-    public function testGetItems_FirstFetchFailed()
-    {
-        $keys = ['cache-key-1', 'cache-key-2'];
-        $this->cacheProvider
-            ->expects($this->exactly(count($keys)))
-            ->method('contains')
-            ->withConsecutive([$keys[0]], [$keys[1]])
-            ->willReturn(true);
+        $firstCacheItem = $cacheItems[$keys[0]];
+        $this->assertInstanceOf('Egils\Component\Cache\CacheItem', $firstCacheItem);
+        $this->assertfalse($firstCacheItem->isHit());
 
-        $otherCacheItem = $this->getMock('Psr\Cache\CacheItemInterface');
-        $this->cacheProvider
-            ->expects($this->exactly(count($keys)))
-            ->method('fetch')
-            ->willReturnMap([[$keys[0], false], [$keys[1], $otherCacheItem]]);
-
-        $cacheItems = $this->adapter->getItems($keys);
-
-        $this->assertCount(2, $cacheItems);
-        $this->assertEquals($keys, array_keys($cacheItems));
-        $this->assertNull($cacheItems[$keys[0]]);
         $this->assertSame($otherCacheItem, $cacheItems[$keys[1]]);
     }
 
@@ -144,20 +163,19 @@ class DoctrineCacheAdapterTest extends TestCase
 
     public function testDeleteItems()
     {
-        $key = 'cache-key';
         $this->cacheProvider
             ->expects($this->once())
             ->method('contains')
-            ->with($key)
+            ->with($this->cacheKey)
             ->willReturn(true);
 
         $this->cacheProvider
             ->expects($this->once())
             ->method('delete')
-            ->with($key)
+            ->with($this->cacheKey)
             ->willReturn(true);
 
-        $cacheItemPool = $this->adapter->deleteItems([$key]);
+        $cacheItemPool = $this->adapter->deleteItems([$this->cacheKey]);
         $this->assertInstanceOf('Psr\Cache\CacheItemPoolInterface', $cacheItemPool);
     }
 
@@ -182,7 +200,6 @@ class DoctrineCacheAdapterTest extends TestCase
     {
         date_default_timezone_set('Europe/Vilnius');
 
-        $cacheKey = 'cache-key';
         $this->cacheItem
             ->expects($this->once())
             ->method('getExpiration')
@@ -190,12 +207,12 @@ class DoctrineCacheAdapterTest extends TestCase
         $this->cacheItem
             ->expects($this->once())
             ->method('getKey')
-            ->willReturn($cacheKey);
+            ->willReturn($this->cacheKey);
 
         $this->cacheProvider
             ->expects($this->once())
             ->method('save')
-            ->with($cacheKey, $this->cacheItem, 30)
+            ->with($this->cacheKey, $this->cacheItem, 30)
             ->willReturn(true);
 
         $cacheItemPool = $this->adapter->save($this->cacheItem);
@@ -204,8 +221,8 @@ class DoctrineCacheAdapterTest extends TestCase
 
     public function testSaveDeferredAndCommit()
     {
-        $keys = ['cache-key-1', 'cache-key-2'];
-        $otherCacheItem = $this->getMock('Psr\Cache\CacheItemInterface');
+        $keys = [$this->cacheKey, 'cache-key-2'];
+        $otherCacheItem = $this->getMock('Egils\Component\Cache\CacheItem', [], [$keys[1]]);
 
         $this->cacheItem
             ->expects($this->once())
@@ -230,9 +247,8 @@ class DoctrineCacheAdapterTest extends TestCase
         $this->assertTrue($this->adapter->commit());
     }
 
-    public function testSaveDeferredAndCommit_SeconSaveFails()
+    public function testSaveDeferredAndCommit_SecondSaveFails()
     {
-        $keys = ['cache-key-1', 'cache-key-2'];
         $otherCacheItem = $this->getMock('Psr\Cache\CacheItemInterface');
 
         $this->cacheItem
