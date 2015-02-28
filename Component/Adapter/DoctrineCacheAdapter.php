@@ -34,6 +34,10 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
      */
     public function getItem($key)
     {
+        if (isset($this->deferred[$key])) {
+            return $this->deferred[$key];
+        }
+
         if (false === $this->provider->contains($key)) {
             return new CacheItem($key);
         }
@@ -98,7 +102,7 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
      */
     public function saveDeferred(CacheItemInterface $item)
     {
-        $this->deferred[] = $item;
+        $this->deferred[$item->getKey()] = $item;
 
         return $this;
     }
@@ -109,11 +113,13 @@ class DoctrineCacheAdapter implements CacheItemPoolInterface
     public function commit()
     {
         $result = true;
-        foreach ($this->deferred as $deferred) {
-            $result = $result && $this->doSave($deferred);
+        foreach ($this->deferred as $key => $deferred) {
+            $saveResult = $this->doSave($deferred);
+            if (true === $saveResult) {
+                unset($this->deferred[$key]);
+            }
+            $result = $result && $saveResult;
         }
-
-        $this->deferred = [];
 
         return $result;
     }
