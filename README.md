@@ -11,7 +11,7 @@ to keep up-to-date with latest PSR-6 interfaces.
 PSR-6 UPDATED
 -------------
 
-Code updated by latest PSR-6 proposition on 2014-11-26.
+Code updated by latest [PSR-6 proposition](https://github.com/php-fig/fig-standards/blob/master/proposed/cache.md) on 2015-03-01.
 
 BUG TRACKING
 ------------
