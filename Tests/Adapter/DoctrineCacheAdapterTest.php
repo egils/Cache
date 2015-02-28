@@ -32,6 +32,8 @@ class DoctrineCacheAdapterTest extends TestCase
 
     public function setUp()
     {
+        date_default_timezone_set('Europe/Vilnius');
+
         $this->cacheProvider = $this->getMockForAbstractClass(
             'Doctrine\Common\Cache\CacheProvider',
             [],
@@ -72,10 +74,30 @@ class DoctrineCacheAdapterTest extends TestCase
         $this->assertSame($this->cacheItem, $cacheItem);
     }
 
+    public function testGetItem_fetchDeferred()
+    {
+        $this->cacheItem
+            ->expects($this->any())
+            ->method('getKey')
+            ->willReturn($this->cacheKey);
+
+        $cacheItemPool = $this->adapter->saveDeferred($this->cacheItem);
+        $this->assertSame($this->adapter, $cacheItemPool);
+
+        $this->cacheProvider
+            ->expects($this->never())
+            ->method('contains');
+        $this->cacheProvider
+            ->expects($this->never())
+            ->method('fetch');
+
+        $cacheItem = $this->adapter->getItem($this->cacheKey);
+
+        $this->assertSame($this->cacheItem, $cacheItem);
+    }
+
     public function testGetItem_ItemNotFound()
     {
-        date_default_timezone_set('Europe/Vilnius');
-
         $this->cacheProvider
             ->expects($this->once())
             ->method('contains')
@@ -181,8 +203,6 @@ class DoctrineCacheAdapterTest extends TestCase
 
     public function testSave_CacheExpired()
     {
-        date_default_timezone_set('Europe/Vilnius');
-
         $this->cacheProvider
             ->expects($this->never())
             ->method('save');
@@ -198,8 +218,6 @@ class DoctrineCacheAdapterTest extends TestCase
 
     public function testSave()
     {
-        date_default_timezone_set('Europe/Vilnius');
-
         $this->cacheItem
             ->expects($this->once())
             ->method('getExpiration')
@@ -228,16 +246,25 @@ class DoctrineCacheAdapterTest extends TestCase
             ->expects($this->once())
             ->method('getExpiration')
             ->willReturn(new \DateTime('now +30 seconds'));
+        $this->cacheItem
+            ->expects($this->any())
+            ->method('getKey')
+            ->willReturn($this->cacheKey);
 
+        $otherCacheKey = 'cache-key-2';
         $otherCacheItem
             ->expects($this->once())
             ->method('getExpiration')
             ->willReturn(new \DateTime('now +30 seconds'));
+        $otherCacheItem
+            ->expects($this->any())
+            ->method('getKey')
+            ->willReturn($otherCacheKey);
 
         $cacheItemPool = $this->adapter->saveDeferred($this->cacheItem);
-        $this->assertInstanceOf('Psr\Cache\CacheItemPoolInterface', $cacheItemPool);
+        $this->assertSame($this->adapter, $cacheItemPool);
         $cacheItemPool = $this->adapter->saveDeferred($otherCacheItem);
-        $this->assertInstanceOf('Psr\Cache\CacheItemPoolInterface', $cacheItemPool);
+        $this->assertSame($this->adapter, $cacheItemPool);
 
         $this->cacheProvider
             ->expects($this->exactly(count($keys)))
@@ -255,16 +282,25 @@ class DoctrineCacheAdapterTest extends TestCase
             ->expects($this->once())
             ->method('getExpiration')
             ->willReturn(new \DateTime('now +30 seconds'));
+        $this->cacheItem
+            ->expects($this->any())
+            ->method('getKey')
+            ->willReturn($this->cacheKey);
 
+        $otherCacheKey = 'cache-key-2';
         $otherCacheItem
             ->expects($this->once())
             ->method('getExpiration')
             ->willReturn(new \DateTime('now +30 seconds'));
+        $otherCacheItem
+            ->expects($this->any())
+            ->method('getKey')
+            ->willReturn($otherCacheKey);
 
         $cacheItemPool = $this->adapter->saveDeferred($this->cacheItem);
-        $this->assertInstanceOf('Psr\Cache\CacheItemPoolInterface', $cacheItemPool);
+        $this->assertSame($this->adapter, $cacheItemPool);
         $cacheItemPool = $this->adapter->saveDeferred($otherCacheItem);
-        $this->assertInstanceOf('Psr\Cache\CacheItemPoolInterface', $cacheItemPool);
+        $this->assertSame($this->adapter, $cacheItemPool);
 
         $this->cacheProvider
             ->expects($this->at(0))
