@@ -5,6 +5,13 @@ Cache component [![SensioLabsInsight](https://insight.sensiolabs.com/projects/05
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/egils/cache/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/egils/cache/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/egils/cache/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/egils/cache/?branch=master)
 
+WARNING!!!
+----------
+This package is no longer maintained. Please use and contribute to latest [PHP Cache project](https://github.com/php-cache/cache)!
+
+About
+-----
+
 PSR-6 compliant cache component. Even tho PSR-6 is (for now) only in "proposed" state this component is planned
 to keep up-to-date with latest PSR-6 interfaces.
 
